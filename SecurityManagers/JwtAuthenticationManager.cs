@@ -1,5 +1,5 @@
 ﻿using ChatApp.Configuaration;
-using ChatApp.Utils;
+
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
@@ -135,11 +135,6 @@ namespace TWChatAppApiMaster.SecurityManagers
                 RefreshToken = _refreshToken,
                 TimeExpiredRefresh = _timeExpiredRefresh
             };
-        }
-
-        public Task<TokenInfo> GetTokenInfoAsync(string refreshToken)
-        {
-            throw new NotImplementedException();
         }
     }
 }

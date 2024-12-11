@@ -1,4 +1,4 @@
-﻿using ChatApp.Utils;
+﻿
 using System.Security.Claims;
 using TWChatAppApiMaster.Models;
 
@@ -24,6 +24,5 @@ namespace TWChatAppApiMaster.SecurityManagers
         public ClaimsPrincipal? GetPrincipalFromExpiredToken(string _accessToken);
 
         Task<TokenResult> RefreshTokenAsync(string refreshToken);
-        Task<TokenInfo> GetTokenInfoAsync(string refreshToken);
     }
 }

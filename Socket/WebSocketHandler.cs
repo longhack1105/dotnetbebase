@@ -175,17 +175,5 @@ namespace ChatApp.Socket
         {
             return ConnectionManager.GetSocketByUser(user);
         }
-
-        public string EncodeBase64(string value)
-        {
-            var valueBytes = Encoding.UTF8.GetBytes(value);
-            return Convert.ToBase64String(valueBytes);
-        }
-
-        public string Base64Decode(string base64EncodedData)
-        {
-            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
-            return System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
-        }
     }
 }

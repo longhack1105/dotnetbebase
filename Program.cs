@@ -2,7 +2,6 @@ using ApiBuyerMorgan.Repositories;
 using ChatApp.Configuaration;
 using ChatApp.Extensions;
 using ChatApp.Socket;
-using ChatApp.Timers;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Mvc;
@@ -16,7 +15,6 @@ using TWChatAppApiMaster.Middleware;
 using TWChatAppApiMaster.Middlewares;
 using TWChatAppApiMaster.Repositories;
 using TWChatAppApiMaster.Timers;
-using TWChatAppApiMaster.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -45,9 +43,7 @@ builder.Services.Configure<AppSettings>(appSettings);
 GlobalSettings.IncludeConfig(appSettings.Get<AppSettings>());
 builder.Services.ConfigureDbContext(GlobalSettings.AppSettings.Database.ChatAppDatabase);
 
-MailService.Init(GlobalSettings.AppSettings.ANSender);
-
-builder.Services.AddHostedService<TimerProcessMessageDb>();
+//builder.Services.AddHostedService<TimerProcessMessageDb>();
 
 /*if (!Directory.Exists(GlobalSettings.AppSettings.UploadPath))
 {
@@ -79,13 +75,13 @@ builder.Services.AddQuartz(q =>
         //)
     );
 });
-builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
+//builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
 
-// Configure FirebaseApp
-FirebaseApp.Create(new AppOptions
-{
-    Credential = GoogleCredential.FromFile("firebase-cloud-message.json")
-});
+//// Configure FirebaseApp
+//FirebaseApp.Create(new AppOptions
+//{
+//    Credential = GoogleCredential.FromFile("firebase-cloud-message.json")
+//});
 
 builder.Services.AddScoped<ILogTimingRepository, LogTimingRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();

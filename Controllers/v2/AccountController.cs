@@ -17,7 +17,7 @@ using TWChatAppApiMaster.Models.Request.Admin;
 using TWChatAppApiMaster.Models.Response.Admin;
 using TWChatAppApiMaster.Repositories;
 using TWChatAppApiMaster.SecurityManagers;
-using TWChatAppApiMaster.Utils;
+
 using static Google.Apis.Requests.BatchRequest;
 
 namespace TWChatAppApiMaster.Controllers.v2
@@ -568,17 +568,12 @@ namespace TWChatAppApiMaster.Controllers.v2
 
             //var pass = "123456";
             //var passHash = MD5Util.Encrypt($"{GlobalSettings.AppSettings.KeyHash}{pass}");
-            var pass = Helper.GenRandomPass();
+            var pass = "123456";
             var passHash = MD5Util.Encrypt($"{GlobalSettings.AppSettings.KeyHash}{pass}");
 
             await _context.Account.AddAsync(acc);
 
-            _ = MailService.SendMailAsync
-                (
-                    ToEmail: acc.Email,
-                    Title: "Thông báo đặt lại mật khẩu tài khoản",
-                    Content: $"Mật khẩu của bạn là: {pass}"
-                );
+            
 
             acc.PassWord = passHash;
 
@@ -726,7 +721,7 @@ namespace TWChatAppApiMaster.Controllers.v2
                 return new OkObjectResult(resp);
             }
 
-            var pass = Helper.GenRandomPass();
+            var pass = "123345";
             var passHash = MD5Util.Encrypt($"{GlobalSettings.AppSettings.KeyHash}{pass}");
 
             var acc = new Account()
@@ -746,12 +741,6 @@ namespace TWChatAppApiMaster.Controllers.v2
             {
                 await _context.SaveChangesAsync();
 
-                _ = MailService.SendMailAsync
-                    (
-                        ToEmail: request.Email,
-                        Title: "Thông báo thêm tài khoản",
-                        Content: $"Mật khẩu của bạn là: {pass}"
-                    );
             }
             catch (Exception ex)
             {
@@ -768,62 +757,7 @@ namespace TWChatAppApiMaster.Controllers.v2
             return new OkObjectResult(resp);
         }
 
-        /// <summary>
-        /// Quên mật khẩu bước 1: Gửi mã tới email
-        /// </summary>
-        /// <param name="request"></param>
-        /// <returns></returns>
-        [HttpPost("forgot/stage-1")]
-        [SwaggerResponse(statusCode: 200, type: typeof(BaseResponse), description: "Members Response")]
-        public async Task<IActionResult> ForgotStage1([FromBody] ForgotEmailStage1Request request)
-        {
-            var resp = new BaseResponse();
-
-            try
-            {
-                var check = await _context.Account.AsNoTracking().FirstOrDefaultAsync(x => x.Email == request.Email && x.IsEnable == 1);
-                if (check == null)
-                {
-                    resp.error.SetErrorCode(ErrorCode.NOT_FOUND);
-                    resp.error.Message = "Email không tồn tại";
-                    return new OkObjectResult(resp);
-                }
-
-                var tranferResp = await MailService.GenerateOtpAsync(request.Email);
-                if (tranferResp == null)
-                {
-                    resp.error = new(ErrorCode.SYSTEM_ERROR);
-                    return new OkObjectResult(resp);
-                }
-
-                if (tranferResp.error.Code != 0)
-                {
-                    resp.error = new(ErrorCode.SYSTEM_ERROR);
-                    return new OkObjectResult(tranferResp);
-                }
-
-                var otpString = tranferResp.Data?.Otp;
-                if (string.IsNullOrEmpty(otpString))
-                {
-                    resp.error = new(ErrorCode.SYSTEM_ERROR);
-                    return new OkObjectResult(resp);
-                }
-
-                _ = MailService.SendMailAsync
-                    (
-                        ToEmail: request.Email,
-                        Title: "Đặt lại mật khẩu",
-                        Content: $"Mã xác minh của bạn là: {otpString}"
-                    );
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Fail: {ex}");
-                resp.error.SetErrorCode(ErrorCode.SYSTEM_ERROR);
-            }
-
-            return new OkObjectResult(resp);
-        }
+        
 
         /// <summary>
         /// Quên mật khẩu bước 2: Xác minh code và email
@@ -846,17 +780,7 @@ namespace TWChatAppApiMaster.Controllers.v2
                     return new OkObjectResult(resp);
                 }
 
-                var tranferResp = await MailService.VerifyAsync(request.Email, request.Code);
-                if (tranferResp == null)
-                {
-                    resp.error = new(ErrorCode.SYSTEM_ERROR);
-                    return new OkObjectResult(resp);
-                }
-
-                if (tranferResp.error.Code != 0)
-                {
-                    return new OkObjectResult(tranferResp);
-                }
+                
             }
             catch (Exception ex)
             {

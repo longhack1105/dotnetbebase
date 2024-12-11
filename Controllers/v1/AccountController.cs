@@ -29,7 +29,6 @@ using TWChatAppApiMaster.Models.Response;
 using TWChatAppApiMaster.Repositories;
 using TWChatAppApiMaster.SecurityManagers;
 using TWChatAppApiMaster.Socket;
-using TWChatAppApiMaster.Utils;
 using static ChatApp.Socket.ChatHandler;
 using static Google.Apis.Requests.BatchRequest;
 
@@ -63,7 +62,6 @@ namespace ChatApp.Controllers.v1
         {
             var response = new BaseResponseMessage<LogInResp>();
             response.Data = new LogInResp();
-
             request.UserName = request.UserName.Trim().ToLower();
 
             try
@@ -431,15 +429,7 @@ namespace ChatApp.Controllers.v1
                     return Ok(response);
                 }
 
-                // kiểm tra otp
-                var checkOtp = await CheckOtp(request.UserName, request.OtpCode, (int)EnumSenderAction.REGISTER);
-
-                if (checkOtp?.error?.Code != ErrorCode.SUCCESS)
-                {
-                    response.error.SetErrorCode(ErrorCode.OTP_INVALID);
-                    response.error.Message = checkOtp?.error?.Message;
-                    return Ok(response);
-                }
+                
 
                 // Kiểm tra tài khoản có tồn tại hay không
                 var acc = _context.Account.Where(x => x.UserName == request.UserName).SingleOrDefault();
@@ -573,15 +563,7 @@ namespace ChatApp.Controllers.v1
                     return Ok(response);
                 }
 
-                // kiểm tra otp
-                var checkOtp = await CheckOtp(request.UserName, request.OtpCode, (int)EnumSenderAction.FOGOT_PASSWORD);
-
-                if (checkOtp?.error?.Code != ErrorCode.SUCCESS)
-                {
-                    response.error.SetErrorCode(ErrorCode.OTP_INVALID);
-                    response.error.Message = checkOtp?.error?.Message;
-                    return Ok(response);
-                }
+               
 
                 var acc = _context.Account.AsNoTracking()
                     .Where(x => x.UserName == request.UserName && x.ActiveState == 1)
@@ -733,15 +715,6 @@ namespace ChatApp.Controllers.v1
                         return Ok(response);
                     }
                 }
-
-                var sendOtpResult = await DoSendOTP(request.PhoneNumber, request.Action); //EnumSenderAction
-
-                if (sendOtpResult?.error?.Code != ErrorCode.SUCCESS)
-                {
-                    response.error.SetErrorCode(ErrorCode.GEN_TOKEN_FAILED);
-                    response.error.Message = sendOtpResult.error.Message;
-                    return Ok(response);
-                }
             }
             catch (Exception ex)
             {
@@ -773,15 +746,6 @@ namespace ChatApp.Controllers.v1
                 if (acc != null)
                 {
                     response.error.SetErrorCode(ErrorCode.EXISTS);
-                    return Ok(response);
-                }
-
-                var sendOtpResult = await DoSendOTP(request.PhoneNumber, (int)EnumSenderAction.REGISTER);
-
-                if (sendOtpResult?.error?.Code != ErrorCode.SUCCESS)
-                {
-                    response.error.SetErrorCode(ErrorCode.GEN_TOKEN_FAILED);
-                    response.error.Message = sendOtpResult.error.Message;
                     return Ok(response);
                 }
             }
@@ -837,16 +801,6 @@ namespace ChatApp.Controllers.v1
                 //    response.error.SetErrorCode(ErrorCode.OTP_INVALID);
                 //    return Ok(response);
                 //}
-
-                // kiểm tra otp
-                var checkOtp = await CheckOtp(request.PhoneNumber, request.Otp, request.Action);
-
-                if (checkOtp?.error?.Code != ErrorCode.SUCCESS)
-                {
-                    response.error.SetErrorCode(ErrorCode.OTP_INVALID);
-                    response.error.Message = checkOtp?.error?.Message;
-                    return Ok(response);
-                }
             }
             catch (Exception ex)
             {
@@ -877,31 +831,6 @@ namespace ChatApp.Controllers.v1
                 {
                     acc.FullName = request.FullName;
                     _context.SaveChanges();
-
-                    var roomAvailable = await MessengeExtension.GetRoomAvailable(_context, acc.UserName, true);
-                    var lstUserToNotify = roomAvailable
-                        .Include(x => x.RoomMembers)
-                        .SelectMany(x => x.RoomMembers.Select(rm => rm.UserName))
-                        .Distinct()
-                        .ToList();
-                    ;
-
-                    if (lstUserToNotify.Any())
-                    {
-                        var responseData = new TWChatAppApiMaster.Socket.Message
-                        {
-                            MsgType = (int)MessageType.TYPE_CHANGE_PROFILE,
-                            Data = JsonConvert.SerializeObject(new ChangeProfileResponse
-                            {
-                                Uuid = acc.Uuid,
-                                FullName = acc.FullName,
-                                Avatar = acc.Avatar,
-                                Username = acc.UserName,
-                            }),
-                        };
-
-                        await ChatHandler.getInstance().SendMessageToGroupUsersAsync(JsonConvert.SerializeObject(responseData), lstUserToNotify);
-                    }
                 }
             }
             catch (Exception ex)
@@ -933,31 +862,6 @@ namespace ChatApp.Controllers.v1
                 {
                     acc.Avatar = request.AvatarPath;
                     _context.SaveChanges();
-
-                    var roomAvailable = await MessengeExtension.GetRoomAvailable(_context, acc.UserName, true);
-                    var lstUserToNotify = roomAvailable
-                        .Include(x => x.RoomMembers)
-                        .SelectMany(x => x.RoomMembers.Select(rm => rm.UserName))
-                        .Distinct()
-                        .ToList();
-                    ;
-
-                    if(lstUserToNotify.Any())
-                    {
-                        var responseData = new TWChatAppApiMaster.Socket.Message
-                        {
-                            MsgType = (int)MessageType.TYPE_CHANGE_PROFILE,
-                            Data = JsonConvert.SerializeObject(new ChangeProfileResponse
-                            {
-                                Uuid = acc.Uuid,
-                                FullName = acc.FullName,
-                                Avatar = acc.Avatar,
-                                Username = acc.UserName,
-                            }),
-                        };
-
-                        await ChatHandler.getInstance().SendMessageToGroupUsersAsync(JsonConvert.SerializeObject(responseData), lstUserToNotify);
-                    }
                 }
             }
             catch (Exception ex)
@@ -1201,81 +1105,7 @@ namespace ChatApp.Controllers.v1
         //    return new OkObjectResult(response);
         //}
 
-        private async Task<BaseResponse?> CheckOtp(string phone, string otp, int action)
-        {
-            //var result = false;
-            //var checkOtp = _context.OtpPhone.Where(x => x.PhoneNumber.Equals(Phone) && x.Otp.Equals(otp) && x.Status == 0).FirstOrDefault();
-
-            //if (checkOtp != null)
-            //{
-            //    checkOtp.Status = 1;
-            //    checkOtp.UserUsed = accActived;
-            //    checkOtp.Note = note;
-
-            //    _context.SaveChanges();
-
-            //    result = true;
-            //}
-
-            ////TODO: Remove late
-            //if (otp.Equals("123456"))
-            //{
-            //    return true;
-            //}
-
-            var sendMailRes = await MailService.VerifySmsAsync(phone, otp, action);
-
-            var otpDb = _context.OtpPhone.AsNoTracking()
-                .FirstOrDefault(x => x.Otp == otp && x.PhoneNumber == phone && x.Action == action && x.Status == 1 && x.TimeExpired > DateTime.Now);
-
-            if (sendMailRes?.error?.Code == ErrorCode.SUCCESS)
-            {
-                // lưu otp
-                if (otpDb == null)
-                {
-                    var newOtp = new OtpPhone
-                    {
-                        PhoneNumber = phone,
-                        Otp = otp,
-                        Action = (sbyte)action,
-                        TimeCreated = DateTime.Now,
-                        TimeExpired = DateTime.Now.AddMinutes(10),
-                        Status = 1,
-                    };
-
-                    _context.Add(newOtp);
-                }
-                else
-                {
-                    otpDb.Status = 1;
-                    otpDb.TimeExpired = DateTime.Now.AddMinutes(10);
-                    _context.Update(otpDb);
-                }
-            }
-            else
-            {
-                // check lần 2 ở db
-                if (otpDb != null)
-                {
-                    otpDb.Status = 0;
-                    _context.Update(otpDb);
-
-                    sendMailRes.error.Code = ErrorCode.SUCCESS;
-                    sendMailRes.error.Message = "";
-                }
-            }
-
-            _context.SaveChanges();
-
-            return sendMailRes;
-        }
-
-        private async Task<BaseResponse?> DoSendOTP(string Phone, int Action)
-        {
-            var sendMailRes = await MailService.SendSmsAsync(Phone, Action);
-
-            return sendMailRes;
-        }
+       
 
         /// <summary>
         /// Refresh Token

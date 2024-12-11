@@ -13,40 +13,7 @@ namespace TWChatAppApiMaster.Timers
             var _context = ServiceExtension.GetDbContext();
             try
             {
-                var lstAutoDelete = _context.RegisterAutoDelete.Where(x=> x.PeriodTime > 0).ToList();
-                foreach (var item in lstAutoDelete)
-                {
-                    double actualPeriod = (DateTime.Now - (DateTime)item.LastTimeDelete).TotalDays;
-                    if(actualPeriod >= item.PeriodTime)
-                    {
-                        var room = _context.Rooms.AsNoTracking()
-                            .Include(x => x.LastMessageUu)
-                            .Where(x => x.Uuid == item.RoomUuid)
-                            .SingleOrDefault();
-                        if (room != null)
-                        {
-                            var messageLst = _context.Messages
-                                .AsNoTracking()
-                                .Where(x => x.RoomUuid == room.Uuid)
-                                .Where(x => !x.MessageDelete.Any(x => x.UserName == item.UserName))
-                                .Where(x => room.LastMessageUu == null || x.Id <= room.LastMessageUu.Id)
-                                .ToList();
-
-                            var newDelete = messageLst
-                                .Select(x => new MessageDelete
-                                {
-                                    MessageUuid = x.Uuid,
-                                    UserName = item.UserName,
-                                })
-                                .ToList();
-
-                            _context.MessageDelete.AddRange(newDelete);
-                            item.LastTimeDelete = DateTime.Now;
-
-                            _context.SaveChanges();
-                        }
-                    }
-                }
+                
             }
             catch (Exception ex)
             {
