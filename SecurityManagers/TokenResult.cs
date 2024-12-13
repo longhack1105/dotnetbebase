@@ -1,4 +1,4 @@
-﻿namespace TWChatAppApiMaster.SecurityManagers
+﻿namespace DotnetBeBase.SecurityManagers
 {
     public class TokenResult
     {

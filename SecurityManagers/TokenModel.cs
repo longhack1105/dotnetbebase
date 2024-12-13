@@ -1,4 +1,4 @@
-﻿namespace TWChatAppApiMaster.Models
+﻿namespace DotnetBeBase.Models
 {
     public class TokenModel
     {

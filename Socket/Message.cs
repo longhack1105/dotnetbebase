@@ -1,7 +1,7 @@
-﻿using ChatApp.Models.DataInfo;
-using TWChatAppApiMaster.Models.DataInfo;
+﻿
+using DotnetBeBase.Models.Dtos;
 
-namespace TWChatAppApiMaster.Socket
+namespace DotnetBeBase.Socket
 {
     public class Message
     {

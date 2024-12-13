@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Quartz;
 using Quartz.Impl;
-using TWChatAppApiMaster.Databases.ChatApp;
+using DotnetBeBase.Databases.Quanlytrungtam;
 
-namespace TWChatAppApiMaster.Timers
+namespace DotnetBeBase.Timers
 {
     public class AutoDeleteMessageJob : IJob
     {

@@ -1,22 +1,20 @@
 ﻿using ChatApp.Extensions;
-using ChatApp.Models.DataInfo;
 using ChatApp.Queue;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Services.Aad;
 using Microsoft.VisualStudio.Services.WebApi;
 using Newtonsoft.Json;
 using System.Text.Json;
-using TWChatAppApiMaster.Databases.ChatApp;
-using TWChatAppApiMaster.Socket;
+using DotnetBeBase.Socket;
 using static ChatApp.Enums.EnumDatabase;
 using Microsoft.AspNetCore.Mvc;
 using static Google.Apis.Requests.BatchRequest;
-using static TWChatAppApiMaster.Models.Response.Admin.GroupGetListResp;
 using Microsoft.VisualStudio.Services.Account;
 using Microsoft.VisualStudio.Services.Users;
 using static Microsoft.VisualStudio.Services.Graph.GraphResourceIds;
 using FirebaseAdmin.Messaging;
 using System.Security.Principal;
+using DotnetBeBase.Databases.Quanlytrungtam;
 
 namespace ChatApp.Socket
 {
@@ -50,7 +48,7 @@ namespace ChatApp.Socket
 
             try
             {
-                var session = _context.Session.AsNoTracking().OrderByDescending(x => x.Id).FirstOrDefault(x => x.Uuid == sessionUuid && x.Status == 0 && x.TimeExpiredRefresh > DateTime.UtcNow);
+                var session = _context.Session.AsNoTracking().OrderByDescending(x => x.Id).FirstOrDefault(x => x.Uuid == sessionUuid && x.State == 1 && x.TimeExpired > DateTime.UtcNow);
                 if (session != null)
                 {
                     return session;
@@ -92,14 +90,14 @@ namespace ChatApp.Socket
             }
         }
 
-        private TWChatAppApiMaster.Socket.Message TryDeserializeMessage(string str)
+        private DotnetBeBase.Socket.Message TryDeserializeMessage(string str)
         {
             try
             {
                 using (JsonDocument doc = JsonDocument.Parse(str))
                 {
                     JsonElement root = doc.RootElement;
-                    var message = new TWChatAppApiMaster.Socket.Message();
+                    var message = new DotnetBeBase.Socket.Message();
                     message.MsgType = root.GetProperty("MsgType").GetInt32();
 
                     JsonElement dataElement = root.GetProperty("Data");
@@ -108,7 +106,7 @@ namespace ChatApp.Socket
                     return message;
                 }
 
-                //return System.Text.Json.JsonSerializer.Deserialize<TWChatAppApiMaster.Socket.Message>(str);
+                //return System.Text.Json.JsonSerializer.Deserialize<DotnetBeBase.Socket.Message>(str);
             }
             catch (Exception ex)
             {
@@ -118,7 +116,7 @@ namespace ChatApp.Socket
 
         public override async Task<object> handleOtherDeviceLogin(string userName)
         {
-            var responseData = new TWChatAppApiMaster.Socket.Message
+            var responseData = new DotnetBeBase.Socket.Message
             {
                 MsgType = (int)MessageType.TYPE_OTHER_DEVICE_LOGIN,
                 Data = ""

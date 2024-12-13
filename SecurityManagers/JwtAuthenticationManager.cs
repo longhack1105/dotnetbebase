@@ -5,9 +5,9 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
-using TWChatAppApiMaster.Models;
+using DotnetBeBase.Models;
 
-namespace TWChatAppApiMaster.SecurityManagers
+namespace DotnetBeBase.SecurityManagers
 {
     public class JwtAuthenticationManager : IJwtAuthenticationManager
     {

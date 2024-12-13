@@ -1,6 +1,6 @@
-﻿using TWChatAppApiMaster.Models;
+﻿using DotnetBeBase.Models;
 
-namespace TWChatAppApiMaster.SecurityManagers
+namespace DotnetBeBase.SecurityManagers
 {
     public class TokenStore
     {

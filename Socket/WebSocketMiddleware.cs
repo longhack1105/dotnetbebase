@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json.Linq;
 using System.Net.WebSockets;
-using TWChatAppApiMaster.Databases.ChatApp;
+using DotnetBeBase.Databases.Quanlytrungtam;
 
 namespace ChatApp.Socket
 {
@@ -93,7 +93,7 @@ namespace ChatApp.Socket
 
             try
             {
-                var session = _context.Session.AsNoTracking().OrderByDescending(x => x.Id).FirstOrDefault(x => x.AccessToken == token && x.Status == 0 && x.TimeExpired > DateTime.UtcNow);
+                var session = _context.Session.AsNoTracking().OrderByDescending(x => x.Id).FirstOrDefault(x => x.Token == token && x.State == 1 && x.TimeExpired > DateTime.UtcNow);
                 if (session != null)
                 {
                     return session;

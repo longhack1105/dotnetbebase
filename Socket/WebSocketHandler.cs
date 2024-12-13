@@ -3,8 +3,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.VisualStudio.Services.Users;
 using System.Net.WebSockets;
 using System.Text;
-using TWChatAppApiMaster.Databases.ChatApp;
-using TWChatAppApiMaster.Models.DataInfo;
+using DotnetBeBase.Databases.Quanlytrungtam;
+using DotnetBeBase.Models.Dtos;
 
 namespace ChatApp.Socket
 {
@@ -30,32 +30,19 @@ namespace ChatApp.Socket
             {
                 bool isSuccess = ConnectionManager.AddSocket(session, socket);
 
-                if (isSuccess)
-                {
-                    var _context = ServiceExtension.GetDbContext();
-                    try
-                    {
-                        session.IsOnline = 1;
-                        session.TimeConnectSocket = DateTime.UtcNow;
-
-                        _context.Session.Update(session);
-
-                        var acc = _context.Account
-                            .FirstOrDefault(x => x.UserName == session.UserName);
-
-                        if (acc != null)
-                        {
-                            acc.LastSeen = DateTime.Now;
-                            _context.Account.Update(acc);
-                        }
-
-                        await _context.SaveChangesAsync();
-                    }
-                    finally
-                    {
-                        _context.Dispose();
-                    }
-                }
+                //if (isSuccess)
+                //{
+                //    var _context = ServiceExtension.GetDbContext();
+                //    try
+                //    {
+                //        _context.Session.Update(session);
+                //        await _context.SaveChangesAsync();
+                //    }
+                //    finally
+                //    {
+                //        _context.Dispose();
+                //    }
+                //}
             }
             else
             {
@@ -65,35 +52,35 @@ namespace ChatApp.Socket
 
         public virtual async Task OnDisconnected(WebSocket socket)
         {
-            var uuid = ConnectionManager.GetUuidBySocket(socket);
-            if (!string.IsNullOrEmpty(uuid))
-            {
-                var _context = ServiceExtension.GetDbContext();
-                try
-                {
-                    var session = await _context.Session.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.Uuid == uuid);
-                    if (session != null)
-                    {
-                        session.TimeDisconnectSocket = DateTime.UtcNow;
-                        session.IsOnline = 0;
+            //var uuid = ConnectionManager.GetUuidBySocket(socket);
+            //if (!string.IsNullOrEmpty(uuid))
+            //{
+            //    //var _context = ServiceExtension.GetDbContext();
+            //    //try
+            //    //{
+            //    //    var session = await _context.Session.OrderByDescending(x => x.Id).FirstOrDefaultAsync(x => x.Uuid == uuid);
+            //    //    if (session != null)
+            //    //    {
+            //    //        session.TimeDisconnectSocket = DateTime.UtcNow;
+            //    //        session.IsOnline = 0;
 
-                        var acc = _context.Account
-                            .FirstOrDefault(x => x.UserName == session.UserName);
+            //    //        var acc = _context.Account
+            //    //            .FirstOrDefault(x => x.UserName == session.UserName);
 
-                        if (acc != null)
-                        {
-                            acc.LastSeen = DateTime.Now;
-                            _context.Account.Update(acc);
-                        }
+            //    //        if (acc != null)
+            //    //        {
+            //    //            acc.LastSeen = DateTime.Now;
+            //    //            _context.Account.Update(acc);
+            //    //        }
 
-                        await _context.SaveChangesAsync();
-                    }
-                }
-                finally
-                {
-                    _context.Dispose();
-                }
-            }    
+            //    //        await _context.SaveChangesAsync();
+            //    //    }
+            //    //}
+            //    //finally
+            //    //{
+            //    //    _context.Dispose();
+            //    //}
+            //}    
 
             await ConnectionManager.RemoveSocket(socket);
         }

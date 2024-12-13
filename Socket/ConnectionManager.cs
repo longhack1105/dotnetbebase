@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
 using System.Net.WebSockets;
-using TWChatAppApiMaster.Databases.ChatApp;
-using TWChatAppApiMaster.Models.DataInfo;
+using DotnetBeBase.Databases.Quanlytrungtam;
+using DotnetBeBase.Models.Dtos;
 
 namespace ChatApp.Socket
 {
@@ -42,9 +42,9 @@ namespace ChatApp.Socket
         public bool AddSocket(Session session, WebSocket socket)
         {
             bool result = false;
-            if (_sockets.Any(x => x.Key == session.UserName))
+            if (_sockets.Any(x => x.Key == session.Username))
             {
-                var userSockets = _sockets.Last(x => x.Key == session.UserName);
+                var userSockets = _sockets.Last(x => x.Key == session.Username);
 
                 if (!userSockets.Value.Select(x => x.WebSocket).Contains(socket))
                 {
@@ -59,7 +59,7 @@ namespace ChatApp.Socket
             }    
             else
             {
-                _sockets.TryAdd(session.UserName, new List<SocketDTO>() { new SocketDTO
+                _sockets.TryAdd(session.Username, new List<SocketDTO>() { new SocketDTO
                 {
                     Uuid = session.Uuid,
                     WebSocket = socket,

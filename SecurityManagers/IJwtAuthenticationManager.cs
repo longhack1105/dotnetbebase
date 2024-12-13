@@ -1,8 +1,8 @@
 ﻿
 using System.Security.Claims;
-using TWChatAppApiMaster.Models;
+using DotnetBeBase.Models;
 
-namespace TWChatAppApiMaster.SecurityManagers
+namespace DotnetBeBase.SecurityManagers
 {
     public interface IJwtAuthenticationManager
     {
@@ -15,7 +15,7 @@ namespace TWChatAppApiMaster.SecurityManagers
         /// <param name="_roleId"></param>
         /// <param name="keyQR">Key đăng nhập bằng QRCode</param>
         /// <returns></returns>
-        TokenModel? Authenticate(List<Claim> AuthClaims,string _username, string _uuid, sbyte? _roleId, string? keyQR = null);
+        TokenModel? Authenticate(List<Claim> AuthClaims,string _username, string _uuid, sbyte? _roleId = null, string? keyQR = null);
         /// <summary>
         /// Xử lý lấy thông tin từ claim từ token, check token
         /// </summary>
