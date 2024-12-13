@@ -1,5 +1,4 @@
-﻿using TWChatAppApiMaster.Databases.ChatApp;
-using ChatApp.Models.DataInfo;
+﻿using DotnetBeBase.Databases.Quanlytrungtam;
 using ChatApp.Socket;
 using System;
 using System.Collections.Generic;
@@ -22,7 +21,6 @@ namespace ChatApp.Queue
         /// 1: Text - 2: Link - 3: Image - 4: Video - 5: Audio
         /// </summary>
         public sbyte ContentType { get; set; }
-        public MessageLineDTO ServerMsg { get; set; }
         public List<string>? ListUsersToSendNotify { get; set; }
         public List<string>? ListUsersOnline { get; set; }
         public List<string>? ListUsersOffline { get; set; }

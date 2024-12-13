@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Controllers;
-using TWChatAppApiMaster.Extensions;
-using TWChatAppApiMaster.Repositories;
+using DotnetBeBase.Extensions;
+using DotnetBeBase.Repositories;
 
-namespace TWChatAppApiMaster.Middleware
+namespace DotnetBeBase.Middleware
 {
     public class SessionValidationMiddleware
     {

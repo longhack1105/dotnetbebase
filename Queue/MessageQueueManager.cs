@@ -1,4 +1,4 @@
-﻿using TWChatAppApiMaster.Databases.ChatApp;
+﻿using DotnetBeBase.Databases.Quanlytrungtam;
 
 namespace ChatApp.Queue
 {

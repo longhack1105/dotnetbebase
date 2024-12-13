@@ -1,6 +1,6 @@
 ﻿using System.Linq.Expressions;
 
-namespace TWChatAppApiMaster.Extensions
+namespace DotnetBeBase.Extensions
 {
     public static class LinqExtensions
     {

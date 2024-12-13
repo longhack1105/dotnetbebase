@@ -1,7 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using ChatApp.Models.Request;
+using DotnetBeBase.Models.Request;
+using DotnetBeBase.Models.Basic;
 
-namespace ChatApp.Models.Request
+namespace DotnetBeBase.Models.Request
 {
     public class UploadImageRequest : DpsParamBase
     {

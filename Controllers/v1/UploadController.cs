@@ -1,14 +1,15 @@
 ﻿using ApiBuyerMorgan.Extensions;
 using ChatApp.Configuaration;
-using ChatApp.Enum;
-using ChatApp.Models.Request;
-using ChatApp.Models.Response;
+using DotnetBeBase.Enums;
+using DotnetBeBase.Models.Request;
+using DotnetBeBase.Models.Response;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.Annotations;
-using TWChatAppApiMaster.Databases.ChatApp;
-using TWChatAppApiMaster.Models.DataInfo;
-using TWChatAppApiMaster.Models.Request;
+using DotnetBeBase.Databases.Quanlytrungtam;
+using DotnetBeBase.Models.Dtos;
+using DotnetBeBase.Models.Request;
+using DotnetBeBase.Models.Basic;
 
 namespace ChatApp.Controllers.v1
 {
@@ -33,12 +34,12 @@ namespace ChatApp.Controllers.v1
         [HttpPut("upload-image")]
         [Consumes("multipart/form-data")]
         [RequestSizeLimit(20 * 1024 * 1024)]
-        [SwaggerResponse(statusCode: 200, type: typeof(BaseResponseMessageItem<string>), description: "UploadImage Response")]
+        [SwaggerResponse(statusCode: 200, type: typeof(BaseResponseMessageItems<string>), description: "UploadImage Response")]
         public async Task<IActionResult> UploadImage([FromForm] UploadImageRequest request)
         {
             var accUser = User.GetUserName();
 
-            var response = new BaseResponseMessageItem<string>();
+            var response = new BaseResponseMessageItems<string>();
 
             try
             {
@@ -58,20 +59,6 @@ namespace ChatApp.Controllers.v1
                             await request.ImageFile[i].CopyToAsync(stream);
                         }
 
-                        if (request.Type.ToString().Contains("4"))
-                        {
-                            var file = new FilesInfo()
-                            {
-                                Uuid = newUuid,
-                                UserUpload = accUser,
-                                FileName = request.ImageFile[i].FileName,
-                                TimeCreated = DateTime.Now,
-                                Path = filePath
-                            };
-                            _context.FilesInfo.Add(file);
-                            _context.SaveChanges();
-                        }
-                        
                         response.Items.Add(filePath);
                     }
                 }
@@ -144,15 +131,6 @@ namespace ChatApp.Controllers.v1
                     Size = new FileInfo(PathFile).Length,
                 };
 
-                var file = new FilesInfo()
-                {
-                    Uuid = newUuid,
-                    UserUpload = accUser,
-                    FileName = request.File.FileName,
-                    TimeCreated = DateTime.Now,
-                    Path = filePath
-                };
-                _context.FilesInfo.Add(file);
                 _context.SaveChanges();
 
                 response.Data = uploadDTO;

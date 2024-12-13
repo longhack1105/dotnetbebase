@@ -1,12 +1,14 @@
-﻿using ChatApp.Enum;
-using ChatApp.Models.Response;
+﻿using DotnetBeBase.Enums;
+using DotnetBeBase.Extensions;
+using DotnetBeBase.Models.Basic;
+using DotnetBeBase.Models.Response;
 using Newtonsoft.Json;
 
 namespace ChatApp.Extensions
 {
     public static class SupportExtension
     {
-        public static T GetMessage<T>(this T resp, ErrorCode errorCode) where T : BaseResponse
+        public static T GetMessage<T>(this T resp, ErrorCode errorCode) where T : BaseResponseMessage
         {
 
             resp.error = new(errorCode);

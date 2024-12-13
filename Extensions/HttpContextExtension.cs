@@ -1,4 +1,4 @@
-﻿namespace TWChatAppApiMaster.Extensions
+﻿namespace DotnetBeBase.Extensions
 {
     public static class HttpContextExtension
     {

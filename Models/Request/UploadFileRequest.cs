@@ -1,7 +1,7 @@
-﻿using ChatApp.Models.Request;
+﻿using DotnetBeBase.Models.Request;
 using Microsoft.AspNetCore.Mvc;
 
-namespace TWChatAppApiMaster.Models.Request;
+namespace DotnetBeBase.Models.Request;
 
 public class UploadFileRequest
 {

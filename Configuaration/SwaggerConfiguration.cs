@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc.Versioning;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
-using TWChatAppApiMaster.Configurations;
-using TWChatAppApiMaster.SecurityManagers;
+using DotnetBeBase.Configurations;
+using DotnetBeBase.SecurityManagers;
 
 namespace Tư.Configurations
 {

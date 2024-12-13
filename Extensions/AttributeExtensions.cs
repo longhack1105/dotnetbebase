@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using System.Reflection;
 
-namespace ChatApp.Extensions
+namespace DotnetBeBase.Extensions
 {
     public static class AttributeExtensions
     {

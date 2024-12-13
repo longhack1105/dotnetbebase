@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using TWChatAppApiMaster.Databases.ChatApp;
-using TWChatAppApiMaster.Repositories;
+using DotnetBeBase.Databases.Quanlytrungtam;
+using DotnetBeBase.Repositories;
 
 namespace ApiBuyerMorgan.Repositories
 {
@@ -13,37 +13,19 @@ namespace ApiBuyerMorgan.Repositories
             _context = context;
         }
 
-        public async Task<Session?> GetSession(string token, bool? isAdmin = null)
+        public async Task<Session?> GetSession(string token, bool? isUpload = null, bool? admin = null)
         {
             var session = await _context.Session
-                .Include(x => x.UserNameNavigation)
+                .Include(x => x.UsernameNavigation)
                 .Where(x => x.TimeExpired > DateTime.UtcNow)
-                .Where(x => x.Status == 0)
+                .Where(x => x.State == 1)
                 .OrderByDescending(x => x.Id)
-                .FirstOrDefaultAsync(x => x.AccessToken == token);
+                .FirstOrDefaultAsync(x => x.Token == token);
 
             if (session == null)
             {
                 return null;
-            }
-
-            if (isAdmin == true && session.UserNameNavigation.RoleId != 2)
-            {
-                return null;
-            }
-
-            if (isAdmin == false && session.UserNameNavigation.RoleId == 2)
-            {
-                return null;
-            }
-
-            if (session.UserNameNavigation.ActiveState == 0)
-            {
-                session.Status = 1;
-                session.LogoutTime = DateTime.Now;
-                await _context.SaveChangesAsync();
-                return null;
-            }    
+            } 
 
             return session;
         }
@@ -53,31 +35,13 @@ namespace ApiBuyerMorgan.Repositories
             try
             {
                 var session = await _context.Session
-                .Include(x => x.UserNameNavigation)
-                .Where(x => x.Status == 0)
+                .Include(x => x.UsernameNavigation)
+                .Where(x => x.State == 1)
                 .OrderByDescending(x => x.Id)
                 .FirstOrDefaultAsync(x => x.RefreshToken == refreshToken);
 
                 if (session == null)
                 {
-                    return null;
-                }
-
-                if (session.TimeExpiredRefresh < DateTime.UtcNow)
-                {
-                    session.Status = 1;
-                    session.LogoutTime = session.TimeExpiredRefresh;
-                    _context.Update(session);
-                    await _context.SaveChangesAsync();
-                    return null;
-                }
-
-                if (session.UserNameNavigation.ActiveState == 0)
-                {
-                    session.Status = 1;
-                    session.LogoutTime = DateTime.Now;
-                    _context.Update(session);
-                    await _context.SaveChangesAsync();
                     return null;
                 }
 
