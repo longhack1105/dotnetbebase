@@ -10,11 +10,10 @@ using Microsoft.Extensions.FileProviders;
 using Quartz;
 using Quartz.Impl.AdoJobStore.Common;
 using Tư.Configurations;
-using TWChatAppApiMaster.Configurations;
-using TWChatAppApiMaster.Middleware;
-using TWChatAppApiMaster.Middlewares;
-using TWChatAppApiMaster.Repositories;
-using TWChatAppApiMaster.Timers;
+using DotnetBeBase.Configurations;
+using DotnetBeBase.Middleware;
+using DotnetBeBase.Repositories;
+using DotnetBeBase.Timers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +22,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddSwaggerConfiguration("ChatApp", "v1");
+builder.Services.AddSwaggerConfiguration("QuanLyTrungTam", "v1");
 builder.Services.AddJwtAuthentication();
 builder.Services.AddApiVersioning(options =>
 {
@@ -41,7 +40,7 @@ builder.Services.AddVersionedApiExplorer(options =>
 var appSettings = builder.Configuration.GetSection("AppSettings");
 builder.Services.Configure<AppSettings>(appSettings);
 GlobalSettings.IncludeConfig(appSettings.Get<AppSettings>());
-builder.Services.ConfigureDbContext(GlobalSettings.AppSettings.Database.ChatAppDatabase);
+builder.Services.ConfigureDbContext(GlobalSettings.AppSettings.Database.QuanLyTrungTam);
 
 //builder.Services.AddHostedService<TimerProcessMessageDb>();
 
@@ -69,10 +68,10 @@ builder.Services.AddQuartz(q =>
         .ForJob(jobKey)
         .WithIdentity("AutoDeleteMessageJob-trigger")
         .WithSchedule(CronScheduleBuilder.DailyAtHourAndMinute(3, 0))
-        //.WithSimpleSchedule(schedule => schedule
-        //    .WithIntervalInMinutes(1) // Lặp lại mỗi 1 phút
-        //    .RepeatForever() // Lặp lại không ngừng
-        //)
+    //.WithSimpleSchedule(schedule => schedule
+    //    .WithIntervalInMinutes(1) // Lặp lại mỗi 1 phút
+    //    .RepeatForever() // Lặp lại không ngừng
+    //)
     );
 });
 //builder.Services.AddQuartzHostedService(q => q.WaitForJobsToComplete = true);
@@ -83,7 +82,6 @@ builder.Services.AddQuartz(q =>
 //    Credential = GoogleCredential.FromFile("firebase-cloud-message.json")
 //});
 
-builder.Services.AddScoped<ILogTimingRepository, LogTimingRepository>();
 builder.Services.AddScoped<ISessionRepository, SessionRepository>();
 
 var app = builder.Build();
@@ -142,7 +140,6 @@ ChatHandler.handleInstance = handler;
 
 
 // app.UseMiddleware<SecretKeyMiddleware>();
-app.UseMiddleware<RequestTimingMiddleware>();
 app.UseMiddleware<SessionValidationMiddleware>();
 
 // Run the application

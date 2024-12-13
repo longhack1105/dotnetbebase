@@ -3,7 +3,7 @@ using System.Web.Http;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace TWChatAppApiMaster.Configuaration
+namespace DotnetBeBase.Configuaration
 {
     public class SecurityRequirementsOperationFilter : IOperationFilter
     {

@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace TWChatAppApiMaster.Configurations
+namespace DotnetBeBase.Configurations
 {
     public class ConfigureSwaggerOptions : IConfigureNamedOptions<SwaggerGenOptions>
     {
@@ -46,7 +46,7 @@ namespace TWChatAppApiMaster.Configurations
         {
             var info = new OpenApiInfo()
             {
-                Title = "ChatApp",
+                Title = "QuanLyTrungTam",
                 Version = desc.ApiVersion.ToString()
             };
 

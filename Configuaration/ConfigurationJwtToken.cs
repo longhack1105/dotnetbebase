@@ -2,9 +2,9 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using TWChatAppApiMaster.SecurityManagers;
+using DotnetBeBase.SecurityManagers;
 
-namespace TWChatAppApiMaster.Configurations
+namespace DotnetBeBase.Configurations
 {
     public static class ConfigurationJwtToken
     {

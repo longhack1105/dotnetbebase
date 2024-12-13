@@ -2,7 +2,7 @@
 {
     public class Database
     {
-        public string ChatAppDatabase { get; set; } = string.Empty;
+        public string QuanLyTrungTam { get; set; } = string.Empty;
     }
     public class JwtTokenSettings
     {
